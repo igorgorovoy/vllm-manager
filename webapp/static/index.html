@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vLLM Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/css/app.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+                    },
+                    colors: {
+                        surface: {
+                            DEFAULT: '#0c0e1a',
+                            light: '#1a1d2e',
+                            lighter: '#252840',
+                        },
+                        vllm: {
+                            blue: '#30a2ff',
+                            yellow: '#fdb517',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-gray-100 min-h-screen flex font-sans antialiased" x-data="app()" x-init="init()">
+
+    <!-- Sidebar -->
+    <nav class="w-56 bg-surface-light border-r border-white/10 flex flex-col min-h-screen fixed">
+        <div class="p-4 border-b border-white/10">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-vllm-blue/20 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-vllm-blue" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-sm font-semibold text-white tracking-tight">vLLM Manager</h1>
+                    <p class="text-[10px] text-gray-500 tracking-wide">GPU Model Server</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex-1 py-2 px-2">
+            <template x-for="item in navItems" :key="item.id">
+                <button
+                    @click="view = item.id"
+                    :class="view === item.id
+                        ? 'bg-vllm-blue/10 text-vllm-blue border-l-2 border-vllm-blue'
+                        : 'text-gray-400 hover:bg-white/5 hover:text-gray-200 border-l-2 border-transparent'"
+                    class="w-full text-left px-3 py-2 text-sm flex items-center gap-3 transition-all duration-200 rounded-r-lg"
+                >
+                    <span x-html="item.icon" class="w-4 h-4 shrink-0"></span>
+                    <span class="font-medium" x-text="item.label"></span>
+                </button>
+            </template>
+        </div>
+        <div class="p-3 border-t border-white/10 text-xs text-gray-500">
+            <div x-show="gpu.name" x-text="gpu.name" class="font-medium text-gray-400 truncate"></div>
+            <div class="mt-0.5">Unified Memory: <span class="text-gray-400" x-text="memory.used_gb + '/' + memory.total_gb + ' GB'"></span></div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="flex-1 ml-56 p-6">
+
+        <!-- Toast -->
+        <div x-show="toast.show" x-transition class="fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl text-sm max-w-md backdrop-blur-sm border"
+             :class="toast.type === 'error' ? 'bg-red-900/80 text-red-200 border-red-500/30' : 'bg-emerald-900/80 text-emerald-200 border-emerald-500/30'">
+            <span x-text="toast.message"></span>
+        </div>
+
+        <!-- Dashboard -->
+        <div x-show="view === 'dashboard'" x-cloak>
+            <h2 class="text-xl font-semibold mb-5 tracking-tight">Dashboard</h2>
+
+            <!-- GPU Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Temperature</div>
+                    <div class="text-2xl font-bold mt-2" :class="(gpu.temperature_c||0) > 75 ? 'text-red-400' : 'text-vllm-blue'">
+                        <span x-text="gpu.temperature_c ?? '--'"></span><span class="text-sm font-normal text-gray-500 ml-0.5">°C</span>
+                    </div>
+                </div>
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">GPU Util</div>
+                    <div class="text-2xl font-bold mt-2 text-emerald-400">
+                        <span x-text="gpu.utilization_gpu_pct ?? '--'"></span><span class="text-sm font-normal text-gray-500 ml-0.5">%</span>
+                    </div>
+                </div>
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Power</div>
+                    <div class="text-2xl font-bold mt-2 text-vllm-yellow">
+                        <span x-text="gpu.power_draw_w ?? '--'"></span><span class="text-sm font-normal text-gray-500 ml-0.5">W</span>
+                    </div>
+                </div>
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Clock</div>
+                    <div class="text-2xl font-bold mt-2 text-purple-400">
+                        <span x-text="gpu.clock_speed_mhz ?? '--'"></span><span class="text-sm font-normal text-gray-500 ml-0.5">MHz</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inference Metrics -->
+            <div x-show="inference" x-cloak class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Tokens/sec</div>
+                    <div class="text-2xl font-bold mt-2 text-vllm-blue">
+                        <span x-text="inference?.tokens_per_sec ?? '--'"></span>
+                    </div>
+                </div>
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">TTFT</div>
+                    <div class="text-2xl font-bold mt-2 text-cyan-400">
+                        <span x-text="inference?.avg_ttft_ms ?? '--'"></span><span class="text-sm font-normal text-gray-500 ml-0.5">ms</span>
+                    </div>
+                </div>
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Active / Queue</div>
+                    <div class="text-2xl font-bold mt-2">
+                        <span class="text-emerald-400" x-text="inference?.requests_running ?? 0"></span>
+                        <span class="text-gray-600 text-lg">/</span>
+                        <span class="text-amber-400" x-text="inference?.requests_waiting ?? 0"></span>
+                    </div>
+                </div>
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">KV Cache</div>
+                    <div class="text-2xl font-bold mt-2" :class="(inference?.kv_cache_usage_pct ?? 0) > 80 ? 'text-red-400' : 'text-purple-400'">
+                        <span x-text="inference?.kv_cache_usage_pct ?? '--'"></span><span class="text-sm font-normal text-gray-500 ml-0.5">%</span>
+                    </div>
+                </div>
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Requests</div>
+                    <div class="text-2xl font-bold mt-2 text-gray-300">
+                        <span x-text="inference?.total_requests ?? 0"></span>
+                    </div>
+                </div>
+                <div class="card group">
+                    <div class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Cache Hits</div>
+                    <div class="text-2xl font-bold mt-2 text-vllm-yellow">
+                        <span x-text="inference?.cache_hit_rate_pct ?? '--'"></span><span class="text-sm font-normal text-gray-500 ml-0.5">%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="card">
+                    <div class="text-sm font-medium text-gray-400 mb-3">Tokens/sec</div>
+                    <div class="h-40 relative"><canvas id="chartTps"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="text-sm font-medium text-gray-400 mb-3">GPU</div>
+                    <div class="h-40 relative"><canvas id="chartGpu"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="text-sm font-medium text-gray-400 mb-3">Active Requests & KV Cache</div>
+                    <div class="h-40 relative"><canvas id="chartRequests"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="text-sm font-medium text-gray-400 mb-3">Latency (TTFT / TPOT)</div>
+                    <div class="h-40 relative"><canvas id="chartLatency"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Memory & Disk -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="card">
+                    <div class="text-sm font-medium text-gray-400 mb-3">Unified Memory</div>
+                    <div class="w-full bg-surface rounded-full h-3 overflow-hidden">
+                        <div class="h-3 rounded-full bg-gradient-to-r from-vllm-blue to-cyan-400 transition-all duration-500"
+                             :style="'width: ' + memory.percent + '%'"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500 mt-2">
+                        <span x-text="memory.used_gb + ' GB used'"></span>
+                        <span x-text="memory.available_gb + ' GB available'"></span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="text-sm font-medium text-gray-400 mb-3">Disk</div>
+                    <div class="w-full bg-surface rounded-full h-3 overflow-hidden">
+                        <div class="h-3 rounded-full bg-gradient-to-r from-vllm-yellow to-orange-400 transition-all duration-500"
+                             :style="'width: ' + (disk.total_gb ? (disk.used_gb/disk.total_gb*100) : 0) + '%'"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500 mt-2">
+                        <span x-text="disk.used_gb + ' GB used'"></span>
+                        <span x-text="disk.free_gb + ' GB free'"></span>
+                        <span x-text="'HF cache: ' + disk.hf_cache_gb + ' GB'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Running Servers -->
+            <div class="card">
+                <div class="text-sm font-medium text-gray-400 mb-3">Running Servers</div>
+                <div x-show="servers.length === 0" class="text-gray-600 text-sm py-2">No servers running</div>
+                <template x-for="s in servers" :key="s.server_id">
+                    <div class="flex items-center justify-between py-2.5 border-b border-white/5 last:border-0">
+                        <div class="flex items-center gap-3">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+                            <span class="font-medium text-sm" x-text="s.model_name"></span>
+                            <span class="text-xs text-gray-500 font-mono" x-text="':' + s.port"></span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button @click="view = 'chat'; chatPort = s.port"
+                                    class="text-xs text-vllm-blue hover:bg-vllm-blue/10 px-2.5 py-1 rounded-lg transition-all duration-200">Chat</button>
+                            <button @click="stopServer(s.server_id)"
+                                    class="text-xs text-red-400 hover:text-red-300 px-2.5 py-1 rounded-lg hover:bg-red-500/10 transition-all duration-200">Stop</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Models -->
+        <div x-show="view === 'models'" x-cloak>
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-xl font-semibold tracking-tight">Models</h2>
+                <button @click="showAddModel = true" class="btn-primary text-sm px-4 py-2 rounded-lg">+ Add Model</button>
+            </div>
+
+            <div class="card !p-0 overflow-hidden">
+                <table class="w-full text-sm">
+                    <thead class="bg-surface-lighter/50 text-gray-500 text-[11px] uppercase tracking-wider">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-medium">Name</th>
+                            <th class="px-4 py-3 text-left font-medium">Repo</th>
+                            <th class="px-4 py-3 text-left font-medium">Dtype</th>
+                            <th class="px-4 py-3 text-left font-medium">Max Len</th>
+                            <th class="px-4 py-3 text-left font-medium">Size</th>
+                            <th class="px-4 py-3 text-left font-medium">Status</th>
+                            <th class="px-4 py-3 text-right font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="m in models" :key="m.name">
+                            <tr class="border-t border-white/5 hover:bg-white/[0.02] transition-colors duration-150">
+                                <td class="px-4 py-3 font-medium" x-text="m.name"></td>
+                                <td class="px-4 py-3 text-gray-400 text-xs font-mono" x-text="m.repo"></td>
+                                <td class="px-4 py-3 text-gray-400" x-text="m.dtype"></td>
+                                <td class="px-4 py-3 text-gray-400 font-mono" x-text="m.max_model_len"></td>
+                                <td class="px-4 py-3 text-gray-400" x-text="m.size_gb ? m.size_gb + ' GB' : '--'"></td>
+                                <td class="px-4 py-3">
+                                    <span x-show="m.downloaded" class="text-emerald-400 text-xs bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">Downloaded</span>
+                                    <span x-show="!m.downloaded && !downloadProgress[m.name]" class="text-gray-500 text-xs bg-white/5 px-2 py-0.5 rounded-full border border-white/10">Not downloaded</span>
+                                    <div x-show="downloadProgress[m.name]" class="w-32">
+                                        <div class="w-full bg-surface rounded-full h-1.5 overflow-hidden">
+                                            <div class="h-1.5 rounded-full bg-vllm-blue progress-striped" style="width: 100%"></div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-1" x-text="downloadProgress[m.name]"></div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-right">
+                                    <button x-show="!m.downloaded && !downloadProgress[m.name]"
+                                            @click="downloadModel(m.name)"
+                                            class="text-xs text-vllm-blue hover:text-vllm-blue/80 mr-2 transition-colors">Download</button>
+                                    <button @click="deleteModel(m.name)"
+                                            :disabled="servers.some(s => s.model_name === m.name)"
+                                            :class="servers.some(s => s.model_name === m.name) ? 'opacity-30 cursor-not-allowed' : 'hover:text-red-300'"
+                                            class="text-xs text-red-400 transition-colors">Delete</button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Add Model Modal -->
+            <div x-show="showAddModel" x-cloak class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-40" @click.self="showAddModel = false"
+                 x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                <div class="card w-full max-w-lg" @click.stop
+                     x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                    <h3 class="text-lg font-semibold mb-5 tracking-tight">Add Model</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs text-gray-400 font-medium mb-1 block">Name</label>
+                            <input x-model="newModel.name" class="input-field" placeholder="my-model">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 font-medium mb-1 block">HuggingFace Repo</label>
+                            <input x-model="newModel.repo" class="input-field font-mono" placeholder="org/model-name">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs text-gray-400 font-medium mb-1 block">Dtype</label>
+                                <select x-model="newModel.dtype" class="input-field">
+                                    <option value="auto">auto</option>
+                                    <option value="bfloat16">bfloat16</option>
+                                    <option value="float16">float16</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 font-medium mb-1 block">Max Model Len</label>
+                                <input x-model.number="newModel.max_model_len" type="number" class="input-field font-mono">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs text-gray-400 font-medium mb-1 block">Tensor Parallel Size</label>
+                                <input x-model.number="newModel.tensor_parallel_size" type="number" class="input-field font-mono">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 font-medium mb-1 block">GPU Memory Utilization</label>
+                                <input x-model.number="newModel.gpu_memory_utilization" type="number" step="0.05" min="0.1" max="1.0" class="input-field font-mono">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-white/10">
+                        <button @click="showAddModel = false" class="px-4 py-2 text-sm text-gray-400 hover:text-gray-200 transition-colors rounded-lg hover:bg-white/5">Cancel</button>
+                        <button @click="addModel()" class="btn-primary px-4 py-2 text-sm rounded-lg">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Servers -->
+        <div x-show="view === 'servers'" x-cloak>
+            <h2 class="text-xl font-semibold mb-5 tracking-tight">Servers</h2>
+
+            <!-- Start Server Form -->
+            <div class="card mb-4">
+                <div class="text-sm font-medium text-gray-400 mb-3">Start New Server</div>
+
+                <!-- Warning if server already running -->
+                <div x-show="servers.length > 0" class="mb-3 px-3 py-2 rounded-lg bg-vllm-yellow/10 border border-vllm-yellow/20 text-vllm-yellow text-xs">
+                    Server already running (<span x-text="servers.map(s => s.model_name).join(', ')"></span>). Stop it before starting a new one.
+                </div>
+
+                <div class="flex gap-3 items-end" :class="servers.length > 0 && 'opacity-50 pointer-events-none'">
+                    <div class="flex-1">
+                        <label class="text-xs text-gray-500 font-medium mb-1 block">Model</label>
+                        <select x-model="startServerForm.model_name" class="input-field">
+                            <option value="">Select model...</option>
+                            <template x-for="m in models.filter(m => m.downloaded)" :key="m.name">
+                                <option :value="m.name" x-text="m.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div class="w-28">
+                        <label class="text-xs text-gray-500 font-medium mb-1 block">Port</label>
+                        <input x-model.number="startServerForm.port" type="number" class="input-field font-mono">
+                    </div>
+                    <div class="w-28">
+                        <label class="text-xs text-gray-500 font-medium mb-1 block">GPU Mem</label>
+                        <input x-model.number="startServerForm.gpu_memory_utilization" type="number" step="0.05" min="0.1" max="1.0" class="input-field font-mono">
+                    </div>
+                    <button @click="startServer()" :disabled="!startServerForm.model_name || serverStarting || servers.length > 0"
+                            class="bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed px-5 py-2 text-sm rounded-lg transition-all duration-200 whitespace-nowrap font-medium text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30">
+                        <span x-show="!serverStarting">Start</span>
+                        <span x-show="serverStarting">Starting...</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Startup Log -->
+            <div x-show="startupLog.length > 0" class="card mb-4">
+                <div class="text-sm font-medium text-gray-400 mb-2">Startup Log</div>
+                <div class="log-viewer bg-surface rounded-xl p-3 max-h-48 overflow-y-auto border border-white/5" x-ref="startupLogEl">
+                    <template x-for="(line, i) in startupLog" :key="i">
+                        <div class="text-gray-300" x-text="line"></div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Running Servers -->
+            <div class="space-y-3">
+                <template x-for="s in servers" :key="s.server_id">
+                    <div class="card hover:border-vllm-blue/20 transition-all duration-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="w-2.5 h-2.5 rounded-full pulse-dot"
+                                      :class="s.status === 'running' ? 'bg-emerald-400' : 'bg-amber-400'"></span>
+                                <div>
+                                    <div class="font-medium text-sm" x-text="s.model_name"></div>
+                                    <div class="text-xs text-gray-500 mt-0.5 font-mono">
+                                        Port <span x-text="s.port"></span> |
+                                        PID <span x-text="s.pid"></span> |
+                                        GPU mem <span x-text="s.gpu_memory_utilization"></span> |
+                                        Started <span x-text="s.started_at"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button @click="view = 'chat'; chatPort = s.port"
+                                        class="text-xs bg-vllm-blue/10 text-vllm-blue hover:bg-vllm-blue/20 px-3 py-1.5 rounded-lg transition-all duration-200 font-medium">Chat</button>
+                                <button @click="viewLogs(s.server_id)"
+                                        class="text-xs bg-white/5 text-gray-300 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-all duration-200 font-medium">Logs</button>
+                                <button @click="stopServer(s.server_id)"
+                                        class="text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg transition-all duration-200 font-medium">Stop</button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <div x-show="servers.length === 0" class="text-gray-600 text-sm text-center py-8">No servers running. Start one above.</div>
+            </div>
+        </div>
+
+        <!-- Logs -->
+        <div x-show="view === 'logs'" x-cloak>
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-xl font-semibold tracking-tight">Logs</h2>
+                <select x-model="logsServerId" @change="loadLogs()" class="input-field w-auto">
+                    <option value="">Select server...</option>
+                    <template x-for="s in servers" :key="s.server_id">
+                        <option :value="s.server_id" x-text="s.model_name + ' (port ' + s.port + ')'"></option>
+                    </template>
+                </select>
+            </div>
+            <div class="card">
+                <div x-show="!logsServerId" class="text-gray-600 text-sm text-center py-8">Select a server to view logs</div>
+                <div x-show="logsServerId" class="log-viewer bg-surface rounded-xl p-3 max-h-[70vh] overflow-y-auto border border-white/5" x-ref="logsEl">
+                    <template x-for="(line, i) in logLines" :key="i">
+                        <div class="text-gray-300" x-text="line"></div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat -->
+        <div x-show="view === 'chat'" x-cloak class="flex flex-col h-[calc(100vh-3rem)]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold tracking-tight">Chat</h2>
+                <div class="flex items-center gap-3">
+                    <select x-model.number="chatPort" class="input-field w-auto text-sm">
+                        <template x-for="s in servers" :key="s.server_id">
+                            <option :value="s.port" x-text="s.model_name + ' :' + s.port"></option>
+                        </template>
+                    </select>
+                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                        <label class="font-medium">Temp:</label>
+                        <input x-model.number="chatTemp" type="number" step="0.1" min="0" max="2" class="w-14 input-field !py-1 font-mono text-xs">
+                    </div>
+                    <button @click="chatMessages = []" class="text-xs text-gray-400 hover:text-gray-200 px-2.5 py-1.5 rounded-lg hover:bg-white/5 transition-all duration-200">Clear</button>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="flex-1 overflow-y-auto space-y-3 mb-3" x-ref="chatEl">
+                <div x-show="chatMessages.length === 0" class="text-gray-600 text-sm text-center py-16">
+                    <template x-if="servers.length === 0">
+                        <span>Start a server first to begin chatting</span>
+                    </template>
+                    <template x-if="servers.length > 0">
+                        <span>Send a message to start</span>
+                    </template>
+                </div>
+                <template x-for="(msg, i) in chatMessages" :key="i">
+                    <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+                        <div :class="msg.role === 'user' ? 'bg-vllm-blue/10 border-vllm-blue/20' : 'bg-surface-light border-white/10'"
+                             class="chat-msg max-w-[80%] rounded-2xl border px-4 py-3 text-sm">
+                            <div x-show="msg.role === 'assistant'" x-html="renderMarkdown(msg.content)"></div>
+                            <div x-show="msg.role === 'user'" class="whitespace-pre-wrap" x-text="msg.content"></div>
+                        </div>
+                    </div>
+                </template>
+                <div x-show="chatStreaming" class="flex justify-start">
+                    <div class="bg-surface-light border border-white/10 rounded-2xl px-4 py-3 text-sm">
+                        <span class="typing-dots text-vllm-blue">
+                            <span></span><span></span><span></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input -->
+            <div class="border-t border-white/10 pt-3">
+                <div class="flex gap-3">
+                    <textarea x-model="chatInput" @keydown.enter.prevent="if(!$event.shiftKey) sendChat()"
+                              :disabled="chatStreaming || servers.length === 0"
+                              placeholder="Type a message... (Shift+Enter for newline)"
+                              class="flex-1 bg-surface-light border border-white/10 rounded-xl px-4 py-3 text-sm resize-none outline-none focus:border-vllm-blue/50 focus:ring-1 focus:ring-vllm-blue/20 disabled:opacity-40 transition-all duration-200 placeholder:text-gray-600"
+                              rows="2"></textarea>
+                    <button @click="sendChat()" :disabled="chatStreaming || !chatInput.trim() || servers.length === 0"
+                            class="btn-primary disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none px-5 py-2 rounded-xl text-sm self-end">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

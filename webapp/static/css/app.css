@@ -1,0 +1,138 @@
+/* === vLLM Design System === */
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* Cards */
+.card {
+    background: #1a1d2e;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    transition: all 0.2s ease;
+}
+.card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Primary button */
+.btn-primary {
+    background: #30a2ff;
+    color: white;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(48, 162, 255, 0.25);
+}
+.btn-primary:hover {
+    background: #4db1ff;
+    box-shadow: 0 6px 20px rgba(48, 162, 255, 0.35);
+    transform: translateY(-1px);
+}
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Input fields */
+.input-field {
+    width: 100%;
+    background: #0c0e1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: #f0f0f0;
+    outline: none;
+    transition: all 0.2s ease;
+}
+.input-field:focus {
+    border-color: rgba(48, 162, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(48, 162, 255, 0.1);
+}
+.input-field::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+/* Log viewer */
+.log-viewer {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* Chat messages */
+.chat-msg pre {
+    background: #0c0e1a;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.8rem;
+}
+.chat-msg code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.8em;
+}
+.chat-msg p:not(:first-child) { margin-top: 0.5rem; }
+.chat-msg ul, .chat-msg ol { margin: 0.25rem 0; padding-left: 1.5rem; }
+
+/* Progress bar animation */
+@keyframes progress-stripe {
+    0% { background-position: 1rem 0; }
+    100% { background-position: 0 0; }
+}
+.progress-striped {
+    background-image: linear-gradient(
+        45deg, rgba(255,255,255,.12) 25%, transparent 25%,
+        transparent 50%, rgba(255,255,255,.12) 50%,
+        rgba(255,255,255,.12) 75%, transparent 75%, transparent
+    );
+    background-size: 1rem 1rem;
+    animation: progress-stripe 0.5s linear infinite;
+}
+
+/* Pulse dot for running status */
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+.pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+/* Typing dots */
+.typing-dots {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+    height: 1em;
+}
+.typing-dots span {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: typing-bounce 1.4s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.16s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.32s; }
+
+@keyframes typing-bounce {
+    0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* Charts */
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Selection */
+::selection {
+    background: rgba(48, 162, 255, 0.3);
+}
