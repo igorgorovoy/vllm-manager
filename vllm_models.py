@@ -322,6 +322,8 @@ def command_serve(args):
         "--tensor-parallel-size", str(model["tensor_parallel_size"]),
         "--gpu-memory-utilization", str(gpu_mem),
     ]
+    if model.get("trust_remote_code"):
+        cmd.append("--trust-remote-code")
 
     env = os.environ.copy()
     env["LD_LIBRARY_PATH"] = CUDA_LD_PATH + ":" + env.get("LD_LIBRARY_PATH", "")
