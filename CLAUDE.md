@@ -9,7 +9,7 @@ vLLM management tooling for a **single-host deployment** on an NVIDIA DGX Spark 
 - `vllm_models.py` — standalone CLI for model profiles, HF downloads, and single-server lifecycle (writes a legacy `server.pid`).
 - `webapp/` — FastAPI + SSE + Alpine.js UI (`/` static + `/api/*`) that supersedes the CLI with multi-server tracking via `servers.json`. `webapp/core.py:_migrate_legacy_pid` absorbs the CLI's old `server.pid` on first read.
 
-The code edits live on macOS but **everything runs on `spark-98a2`**. Paths like `/home/igogo/vllm-tools/.venv` are hardcoded in `vllm_models.py` and `webapp/config.py` — treat this repo as deployed-in-place, not portable.
+The code edits live on macOS but **everything runs on `spark-98a2`**. Absolute paths to the tools directory and its `.venv` are hardcoded in `vllm_models.py` and `webapp/config.py` — treat this repo as deployed-in-place, not portable.
 
 ## Host constraints that shape the code
 

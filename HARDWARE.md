@@ -120,17 +120,17 @@ Originally the webapp/CLI enforced a single vLLM server at a time. That constrai
 ```bash
 # Full GPU picture
 nvidia-smi
-/home/igogo/gpu-control.sh status
-/home/igogo/gpu-control.sh health
+./scripts/gpu-control.sh status
+./scripts/gpu-control.sh health
 
 # Free GPU memory (use this, not nvidia-smi)
-/home/igogo/vllm-tools/.venv/bin/python -c \
+./.venv/bin/python -c \
   "import torch; f,t=torch.cuda.mem_get_info(0); print(f'{f/(1024**3):.1f} / {t/(1024**3):.1f} GB')"
 
 # Verify torch sees the GPU with the right capability
-/home/igogo/vllm-tools/.venv/bin/python -c \
+./.venv/bin/python -c \
   "import torch; print(torch.cuda.get_device_name(0), torch.cuda.get_device_capability(0))"
 
 # Clean up every vLLM process (including orphan engine-core workers)
-/home/igogo/vllm-tools/vllm_models.py stop
+./vllm_models.py stop
 ```

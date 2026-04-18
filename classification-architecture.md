@@ -36,7 +36,7 @@ Quality improvements layered in three iterations:
 
 ### Driver script
 
-`/home/igogo/vllm-tools/bench_models.sh`:
+`bench_models.sh`:
 - Iterates models from `~/.config/vllm-models/models.json`.
 - For each: starts server via `vllm_models.py serve`, waits for `/health`, runs `vllm bench serve` N times inside one server session (steady-state, no reload between repeats), computes median across runs via `jq`, appends one row to `~/.config/vllm-models/benchmarks/summary.csv`, stops server.
 - Keeps per-run JSONs for audit (`BENCH_KEEP=20` retention).

@@ -66,7 +66,7 @@ flowchart LR
 
 ```bash
 # First-time setup (creates .venv, installs vllm + huggingface_hub[cli])
-/home/igogo/vllm-tools/install_vllm_deps.sh
+./install_vllm_deps.sh
 
 # Profile management
 ./vllm_models.py list
@@ -85,7 +85,7 @@ flowchart LR
 ./vllm_models.py restart <name> --port 8000
 
 # Webapp
-cd /home/igogo/vllm-tools && ./.venv/bin/python run_webapp.py
+./.venv/bin/python run_webapp.py
 # then http://<spark-ip>:7860/
 ```
 
