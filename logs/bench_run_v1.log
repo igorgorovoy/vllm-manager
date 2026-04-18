@@ -1,0 +1,206 @@
+== Cleaning up any running vLLM servers ==
+
+===== Qwen3.6-35B-A3B =====
+[Qwen3.6-35B-A3B] starting server (Qwen/Qwen3.6-35B-A3B)
+Started vLLM for 'Qwen3.6-35B-A3B' on port 8000 (pid=240113)
+Logs: /home/igogo/.config/vllm-models/server.log
+[Qwen3.6-35B-A3B] waiting for /health (up to 900s)...
+[Qwen3.6-35B-A3B] ready, running benchmark
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Namespace(subparser='bench', bench_type='serve', dispatch_function=<function BenchmarkServingSubcommand.cmd at 0xe556f9e8a700>, trust_remote_code=False, seed=0, num_prompts=100, dataset_name='random', no_stream=False, dataset_path=None, no_oversample=False, skip_chat_template=False, enable_multimodal_chat=False, disable_shuffle=False, custom_output_len=256, spec_bench_output_len=256, spec_bench_category=None, sonnet_input_len=550, sonnet_output_len=150, sonnet_prefix_len=200, sharegpt_output_len=None, blazedit_min_distance=0.0, blazedit_max_distance=1.0, asr_max_audio_len_sec=inf, asr_min_audio_len_sec=0.0, random_input_len=512, random_output_len=256, random_range_ratio=0.0, random_prefix_len=0, random_batch_size=1, no_reranker=False, random_mm_base_items_per_request=1, random_mm_num_mm_items_range_ratio=0.0, random_mm_limit_mm_per_prompt={'image': 255, 'video': 1}, random_mm_bucket_config={(256, 256, 1): 0.5, (720, 1280, 1): 0.5, (720, 1280, 16): 0.0}, hf_subset=None, hf_split=None, hf_name=None, hf_output_len=None, prefix_repetition_prefix_len=256, prefix_repetition_suffix_len=256, prefix_repetition_num_prefixes=10, prefix_repetition_output_len=128, label=None, backend='openai', base_url=None, host='127.0.0.1', port=8000, endpoint='/v1/completions', header=None, max_concurrency=None, model='Qwen/Qwen3.6-35B-A3B', input_len=None, output_len=None, tokenizer=None, tokenizer_mode='auto', use_beam_search=False, logprobs=None, request_rate=inf, burstiness=1.0, disable_tqdm=False, num_warmups=0, profile=False, save_result=True, save_detailed=False, append_result=False, metadata=None, result_dir='/home/igogo/.config/vllm-models/benchmarks', result_filename='bench_Qwen3.6-35B-A3B_20260417T172101Z.json', ignore_eos=False, percentile_metrics='ttft,tpot,itl,e2el', metric_percentiles='99', goodput=None, request_id_prefix='bench-c33d07f0-', top_p=None, top_k=None, min_p=None, temperature=None, frequency_penalty=None, presence_penalty=None, repetition_penalty=None, served_model_name=None, lora_modules=None, lora_assignment='random', ramp_up_strategy=None, ramp_up_start_rps=None, ramp_up_end_rps=None, ready_check_timeout_sec=0, extra_body=None, skip_tokenizer_init=False, insecure=False, plot_timeline=False, timeline_itl_thresholds=[25.0, 50.0], plot_dataset_stats=False)
+INFO 04-17 19:26:55 [datasets.py:700] Sampling input_len from [512, 512] and output_len from [256, 256]
+WARNING: vllm bench serve no longer sets temperature==0 (greedy) in requests by default. The default will be determined on the server side and can be model/API specific. For the old behavior, include --temperature=0.
+Starting initial single prompt test run...
+Skipping endpoint ready check.
+Starting main benchmark run...
+Traffic request rate: inf
+Burstiness factor: 1.0 (Poisson process)
+Maximum request concurrency: None
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [01:50<3:02:31, 110.62s/it]  2%|▏         | 2/100 [01:50<1:14:42, 45.74s/it]   5%|▌         | 5/100 [01:51<20:40, 13.06s/it]    9%|▉         | 9/100 [01:51<08:26,  5.57s/it] 13%|█▎        | 13/100 [01:51<04:28,  3.09s/it] 17%|█▋        | 17/100 [01:52<02:38,  1.90s/it] 21%|██        | 21/100 [01:52<01:38,  1.25s/it] 25%|██▌       | 25/100 [01:52<01:03,  1.18it/s] 29%|██▉       | 29/100 [01:52<00:42,  1.69it/s] 33%|███▎      | 33/100 [01:53<00:28,  2.34it/s] 37%|███▋      | 37/100 [01:53<00:19,  3.20it/s] 41%|████      | 41/100 [01:53<00:13,  4.25it/s] 45%|████▌     | 45/100 [01:53<00:09,  5.52it/s] 49%|████▉     | 49/100 [01:54<00:07,  6.95it/s] 53%|█████▎    | 53/100 [01:54<00:05,  8.54it/s] 57%|█████▋    | 57/100 [01:54<00:04, 10.18it/s] 61%|██████    | 61/100 [01:54<00:03, 11.92it/s] 65%|██████▌   | 65/100 [01:55<00:02, 13.49it/s] 68%|██████▊   | 68/100 [01:55<00:02, 13.82it/s] 72%|███████▏  | 72/100 [01:55<00:01, 15.65it/s] 76%|███████▌  | 76/100 [01:55<00:01, 17.12it/s] 80%|████████  | 80/100 [01:55<00:01, 18.95it/s] 84%|████████▍ | 84/100 [01:55<00:00, 20.63it/s] 88%|████████▊ | 88/100 [01:56<00:00, 23.17it/s] 92%|█████████▏| 92/100 [01:56<00:00, 25.48it/s] 99%|█████████▉| 99/100 [01:56<00:00, 33.64it/s]100%|██████████| 100/100 [01:56<00:00,  1.16s/it]
+tip: install termplotlib and gnuplot to plot the metrics
+============ Serving Benchmark Result ============
+Successful requests:                     100       
+Failed requests:                         0         
+Benchmark duration (s):                  116.31    
+Total input tokens:                      51200     
+Total generated tokens:                  25600     
+Request throughput (req/s):              0.86      
+Output token throughput (tok/s):         220.09    
+Peak output token throughput (tok/s):    400.00    
+Peak concurrent requests:                100.00    
+Total token throughput (tok/s):          660.28    
+---------------Time to First Token----------------
+Mean TTFT (ms):                          30830.89  
+Median TTFT (ms):                        30386.44  
+P99 TTFT (ms):                           39963.10  
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          326.20    
+Median TPOT (ms):                        328.71    
+P99 TPOT (ms):                           342.92    
+---------------Inter-token Latency----------------
+Mean ITL (ms):                           326.20    
+Median ITL (ms):                         311.98    
+P99 ITL (ms):                            789.75    
+----------------End-to-end Latency----------------
+Mean E2EL (ms):                          114010.90 
+Median E2EL (ms):                        114207.76 
+P99 E2EL (ms):                           116303.58 
+==================================================
+[Qwen3.6-35B-A3B] appended row to /home/igogo/.config/vllm-models/benchmarks/summary.csv
+[Qwen3.6-35B-A3B] stopping server
+
+===== gemma4-31b-it =====
+[gemma4-31b-it] starting server (google/gemma-4-31B-it)
+Started vLLM for 'gemma4-31b-it' on port 8000 (pid=245332)
+Logs: /home/igogo/.config/vllm-models/server.log
+[gemma4-31b-it] waiting for /health (up to 900s)...
+[gemma4-31b-it] ready, running benchmark
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Namespace(subparser='bench', bench_type='serve', dispatch_function=<function BenchmarkServingSubcommand.cmd at 0xe323cf60a700>, trust_remote_code=False, seed=0, num_prompts=100, dataset_name='random', no_stream=False, dataset_path=None, no_oversample=False, skip_chat_template=False, enable_multimodal_chat=False, disable_shuffle=False, custom_output_len=256, spec_bench_output_len=256, spec_bench_category=None, sonnet_input_len=550, sonnet_output_len=150, sonnet_prefix_len=200, sharegpt_output_len=None, blazedit_min_distance=0.0, blazedit_max_distance=1.0, asr_max_audio_len_sec=inf, asr_min_audio_len_sec=0.0, random_input_len=512, random_output_len=256, random_range_ratio=0.0, random_prefix_len=0, random_batch_size=1, no_reranker=False, random_mm_base_items_per_request=1, random_mm_num_mm_items_range_ratio=0.0, random_mm_limit_mm_per_prompt={'image': 255, 'video': 1}, random_mm_bucket_config={(256, 256, 1): 0.5, (720, 1280, 1): 0.5, (720, 1280, 16): 0.0}, hf_subset=None, hf_split=None, hf_name=None, hf_output_len=None, prefix_repetition_prefix_len=256, prefix_repetition_suffix_len=256, prefix_repetition_num_prefixes=10, prefix_repetition_output_len=128, label=None, backend='openai', base_url=None, host='127.0.0.1', port=8000, endpoint='/v1/completions', header=None, max_concurrency=None, model='google/gemma-4-31B-it', input_len=None, output_len=None, tokenizer=None, tokenizer_mode='auto', use_beam_search=False, logprobs=None, request_rate=inf, burstiness=1.0, disable_tqdm=False, num_warmups=0, profile=False, save_result=True, save_detailed=False, append_result=False, metadata=None, result_dir='/home/igogo/.config/vllm-models/benchmarks', result_filename='bench_gemma4-31b-it_20260417T172910Z.json', ignore_eos=False, percentile_metrics='ttft,tpot,itl,e2el', metric_percentiles='99', goodput=None, request_id_prefix='bench-318407dd-', top_p=None, top_k=None, min_p=None, temperature=None, frequency_penalty=None, presence_penalty=None, repetition_penalty=None, served_model_name=None, lora_modules=None, lora_assignment='random', ramp_up_strategy=None, ramp_up_start_rps=None, ramp_up_end_rps=None, ready_check_timeout_sec=0, extra_body=None, skip_tokenizer_init=False, insecure=False, plot_timeline=False, timeline_itl_thresholds=[25.0, 50.0], plot_dataset_stats=False)
+INFO 04-17 19:37:45 [datasets.py:700] Sampling input_len from [512, 512] and output_len from [256, 256]
+WARNING: vllm bench serve no longer sets temperature==0 (greedy) in requests by default. The default will be determined on the server side and can be model/API specific. For the old behavior, include --temperature=0.
+Starting initial single prompt test run...
+Skipping endpoint ready check.
+Starting main benchmark run...
+Traffic request rate: inf
+Burstiness factor: 1.0 (Poisson process)
+Maximum request concurrency: None
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [03:11<5:15:58, 191.50s/it]  2%|▏         | 2/100 [03:20<2:17:25, 84.14s/it]   5%|▌         | 5/100 [03:21<38:04, 24.05s/it]    9%|▉         | 9/100 [03:23<15:51, 10.46s/it] 13%|█▎        | 13/100 [03:25<08:38,  5.96s/it] 17%|█▋        | 17/100 [03:27<05:16,  3.81s/it] 21%|██        | 21/100 [03:28<03:26,  2.62s/it] 25%|██▌       | 25/100 [03:30<02:22,  1.89s/it] 29%|██▉       | 29/100 [03:32<01:41,  1.43s/it] 33%|███▎      | 33/100 [03:34<01:15,  1.13s/it] 37%|███▋      | 37/100 [03:36<00:56,  1.11it/s] 41%|████      | 41/100 [03:36<00:39,  1.50it/s] 45%|████▌     | 45/100 [03:37<00:27,  1.99it/s] 49%|████▉     | 49/100 [03:37<00:19,  2.59it/s] 53%|█████▎    | 53/100 [03:38<00:14,  3.29it/s] 57%|█████▋    | 57/100 [03:38<00:10,  4.07it/s] 61%|██████    | 61/100 [03:39<00:07,  4.92it/s] 65%|██████▌   | 65/100 [03:39<00:06,  5.81it/s] 68%|██████▊   | 68/100 [03:40<00:05,  6.18it/s] 72%|███████▏  | 72/100 [03:40<00:03,  7.16it/s] 76%|███████▌  | 76/100 [03:40<00:02,  8.07it/s] 77%|███████▋  | 77/100 [03:41<00:05,  4.60it/s] 78%|███████▊  | 78/100 [03:49<00:24,  1.11s/it] 79%|███████▉  | 79/100 [03:51<00:28,  1.37s/it] 80%|████████  | 80/100 [03:56<00:38,  1.92s/it] 81%|████████  | 81/100 [03:58<00:38,  2.03s/it] 82%|████████▏ | 82/100 [04:02<00:43,  2.42s/it] 83%|████████▎ | 83/100 [04:05<00:40,  2.40s/it] 84%|████████▍ | 84/100 [04:08<00:43,  2.74s/it] 85%|████████▌ | 85/100 [04:10<00:39,  2.61s/it] 86%|████████▌ | 86/100 [04:13<00:37,  2.68s/it] 87%|████████▋ | 87/100 [04:15<00:31,  2.45s/it] 88%|████████▊ | 88/100 [04:19<00:33,  2.83s/it] 89%|████████▉ | 89/100 [04:21<00:27,  2.46s/it] 90%|█████████ | 90/100 [04:23<00:25,  2.55s/it] 91%|█████████ | 91/100 [04:25<00:21,  2.33s/it] 92%|█████████▏| 92/100 [04:28<00:20,  2.54s/it] 93%|█████████▎| 93/100 [04:30<00:16,  2.32s/it] 94%|█████████▍| 94/100 [04:32<00:13,  2.25s/it] 95%|█████████▌| 95/100 [04:34<00:11,  2.28s/it] 96%|█████████▌| 96/100 [04:36<00:07,  1.95s/it] 97%|█████████▋| 97/100 [04:38<00:06,  2.13s/it] 98%|█████████▊| 98/100 [04:40<00:04,  2.00s/it] 99%|█████████▉| 99/100 [04:41<00:01,  1.90s/it]100%|██████████| 100/100 [04:43<00:00,  1.90s/it]100%|██████████| 100/100 [04:43<00:00,  2.84s/it]
+tip: install termplotlib and gnuplot to plot the metrics
+============ Serving Benchmark Result ============
+Successful requests:                     100       
+Failed requests:                         0         
+Benchmark duration (s):                  283.89    
+Total input tokens:                      51200     
+Total generated tokens:                  25600     
+Request throughput (req/s):              0.35      
+Output token throughput (tok/s):         90.17     
+Peak output token throughput (tok/s):    200.00    
+Peak concurrent requests:                100.00    
+Total token throughput (tok/s):          270.52    
+---------------Time to First Token----------------
+Mean TTFT (ms):                          29714.03  
+Median TTFT (ms):                        29054.67  
+P99 TTFT (ms):                           52640.29  
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          761.22    
+Median TPOT (ms):                        749.13    
+P99 TPOT (ms):                           899.46    
+---------------Inter-token Latency----------------
+Mean ITL (ms):                           761.22    
+Median ITL (ms):                         642.23    
+P99 ITL (ms):                            1962.99   
+----------------End-to-end Latency----------------
+Mean E2EL (ms):                          223824.34 
+Median E2EL (ms):                        217919.56 
+P99 E2EL (ms):                           282002.14 
+==================================================
+[gemma4-31b-it] appended row to /home/igogo/.config/vllm-models/benchmarks/summary.csv
+[gemma4-31b-it] stopping server
+
+===== glm47-flash =====
+[glm47-flash] starting server (zai-org/GLM-4.7-Flash)
+Started vLLM for 'glm47-flash' on port 8000 (pid=251878)
+Logs: /home/igogo/.config/vllm-models/server.log
+[glm47-flash] waiting for /health (up to 900s)...
+[glm47-flash] ready, running benchmark
+Namespace(subparser='bench', bench_type='serve', dispatch_function=<function BenchmarkServingSubcommand.cmd at 0xf1282f3fe3e0>, trust_remote_code=False, seed=0, num_prompts=100, dataset_name='random', no_stream=False, dataset_path=None, no_oversample=False, skip_chat_template=False, enable_multimodal_chat=False, disable_shuffle=False, custom_output_len=256, spec_bench_output_len=256, spec_bench_category=None, sonnet_input_len=550, sonnet_output_len=150, sonnet_prefix_len=200, sharegpt_output_len=None, blazedit_min_distance=0.0, blazedit_max_distance=1.0, asr_max_audio_len_sec=inf, asr_min_audio_len_sec=0.0, random_input_len=512, random_output_len=256, random_range_ratio=0.0, random_prefix_len=0, random_batch_size=1, no_reranker=False, random_mm_base_items_per_request=1, random_mm_num_mm_items_range_ratio=0.0, random_mm_limit_mm_per_prompt={'image': 255, 'video': 1}, random_mm_bucket_config={(256, 256, 1): 0.5, (720, 1280, 1): 0.5, (720, 1280, 16): 0.0}, hf_subset=None, hf_split=None, hf_name=None, hf_output_len=None, prefix_repetition_prefix_len=256, prefix_repetition_suffix_len=256, prefix_repetition_num_prefixes=10, prefix_repetition_output_len=128, label=None, backend='openai', base_url=None, host='127.0.0.1', port=8000, endpoint='/v1/completions', header=None, max_concurrency=None, model='zai-org/GLM-4.7-Flash', input_len=None, output_len=None, tokenizer=None, tokenizer_mode='auto', use_beam_search=False, logprobs=None, request_rate=inf, burstiness=1.0, disable_tqdm=False, num_warmups=0, profile=False, save_result=True, save_detailed=False, append_result=False, metadata=None, result_dir='/home/igogo/.config/vllm-models/benchmarks', result_filename='bench_glm47-flash_20260417T174247Z.json', ignore_eos=False, percentile_metrics='ttft,tpot,itl,e2el', metric_percentiles='99', goodput=None, request_id_prefix='bench-315507ae-', top_p=None, top_k=None, min_p=None, temperature=None, frequency_penalty=None, presence_penalty=None, repetition_penalty=None, served_model_name=None, lora_modules=None, lora_assignment='random', ramp_up_strategy=None, ramp_up_start_rps=None, ramp_up_end_rps=None, ready_check_timeout_sec=0, extra_body=None, skip_tokenizer_init=False, insecure=False, plot_timeline=False, timeline_itl_thresholds=[25.0, 50.0], plot_dataset_stats=False)
+INFO 04-17 19:46:57 [datasets.py:700] Sampling input_len from [512, 512] and output_len from [256, 256]
+WARNING: vllm bench serve no longer sets temperature==0 (greedy) in requests by default. The default will be determined on the server side and can be model/API specific. For the old behavior, include --temperature=0.
+Starting initial single prompt test run...
+Skipping endpoint ready check.
+Starting main benchmark run...
+Traffic request rate: inf
+Burstiness factor: 1.0 (Poisson process)
+Maximum request concurrency: None
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [01:29<2:27:26, 89.36s/it]  2%|▏         | 2/100 [01:29<1:00:22, 36.97s/it]  5%|▌         | 5/100 [01:29<16:44, 10.57s/it]    9%|▉         | 9/100 [01:30<06:50,  4.51s/it] 13%|█▎        | 13/100 [01:30<03:38,  2.51s/it] 17%|█▋        | 17/100 [01:30<02:08,  1.55s/it] 21%|██        | 21/100 [01:31<01:20,  1.02s/it] 25%|██▌       | 25/100 [01:31<00:52,  1.43it/s] 29%|██▉       | 29/100 [01:31<00:34,  2.04it/s] 33%|███▎      | 33/100 [01:31<00:23,  2.81it/s] 37%|███▋      | 37/100 [01:32<00:16,  3.78it/s] 41%|████      | 41/100 [01:32<00:11,  4.93it/s] 45%|████▌     | 45/100 [01:32<00:08,  6.28it/s] 49%|████▉     | 49/100 [01:32<00:06,  7.75it/s] 53%|█████▎    | 53/100 [01:33<00:05,  9.35it/s] 57%|█████▋    | 57/100 [01:33<00:03, 10.92it/s] 61%|██████    | 61/100 [01:33<00:03, 12.52it/s] 65%|██████▌   | 65/100 [01:33<00:02, 14.05it/s] 68%|██████▊   | 68/100 [01:33<00:02, 14.12it/s] 72%|███████▏  | 72/100 [01:34<00:01, 15.61it/s] 76%|███████▌  | 76/100 [01:34<00:01, 16.92it/s] 80%|████████  | 80/100 [01:34<00:01, 18.23it/s] 84%|████████▍ | 84/100 [01:34<00:00, 19.54it/s] 88%|████████▊ | 88/100 [01:34<00:00, 21.19it/s] 92%|█████████▏| 92/100 [01:34<00:00, 23.20it/s] 95%|█████████▌| 95/100 [01:35<00:00, 24.39it/s]100%|██████████| 100/100 [01:35<00:00,  1.05it/s]
+tip: install termplotlib and gnuplot to plot the metrics
+============ Serving Benchmark Result ============
+Successful requests:                     100       
+Failed requests:                         0         
+Benchmark duration (s):                  95.15     
+Total input tokens:                      51200     
+Total generated tokens:                  25600     
+Request throughput (req/s):              1.05      
+Output token throughput (tok/s):         269.06    
+Peak output token throughput (tok/s):    400.00    
+Peak concurrent requests:                100.00    
+Total token throughput (tok/s):          807.18    
+---------------Time to First Token----------------
+Mean TTFT (ms):                          16142.00  
+Median TTFT (ms):                        16402.70  
+P99 TTFT (ms):                           23534.10  
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          300.29    
+Median TPOT (ms):                        299.93    
+P99 TPOT (ms):                           347.46    
+---------------Inter-token Latency----------------
+Mean ITL (ms):                           300.29    
+Median ITL (ms):                         290.89    
+P99 ITL (ms):                            539.52    
+----------------End-to-end Latency----------------
+Mean E2EL (ms):                          92717.15  
+Median E2EL (ms):                        92885.02  
+P99 E2EL (ms):                           95135.31  
+==================================================
+[glm47-flash] appended row to /home/igogo/.config/vllm-models/benchmarks/summary.csv
+[glm47-flash] stopping server
+
+===== qwen35-coder-35b =====
+[qwen35-coder-35b] starting server (Qwen/Qwen3.5-35B-A3B)
+Started vLLM for 'qwen35-coder-35b' on port 8000 (pid=253688)
+Logs: /home/igogo/.config/vllm-models/server.log
+[qwen35-coder-35b] waiting for /health (up to 900s)...
+[qwen35-coder-35b] ready, running benchmark
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Namespace(subparser='bench', bench_type='serve', dispatch_function=<function BenchmarkServingSubcommand.cmd at 0xf047b564e3e0>, trust_remote_code=False, seed=0, num_prompts=100, dataset_name='random', no_stream=False, dataset_path=None, no_oversample=False, skip_chat_template=False, enable_multimodal_chat=False, disable_shuffle=False, custom_output_len=256, spec_bench_output_len=256, spec_bench_category=None, sonnet_input_len=550, sonnet_output_len=150, sonnet_prefix_len=200, sharegpt_output_len=None, blazedit_min_distance=0.0, blazedit_max_distance=1.0, asr_max_audio_len_sec=inf, asr_min_audio_len_sec=0.0, random_input_len=512, random_output_len=256, random_range_ratio=0.0, random_prefix_len=0, random_batch_size=1, no_reranker=False, random_mm_base_items_per_request=1, random_mm_num_mm_items_range_ratio=0.0, random_mm_limit_mm_per_prompt={'image': 255, 'video': 1}, random_mm_bucket_config={(256, 256, 1): 0.5, (720, 1280, 1): 0.5, (720, 1280, 16): 0.0}, hf_subset=None, hf_split=None, hf_name=None, hf_output_len=None, prefix_repetition_prefix_len=256, prefix_repetition_suffix_len=256, prefix_repetition_num_prefixes=10, prefix_repetition_output_len=128, label=None, backend='openai', base_url=None, host='127.0.0.1', port=8000, endpoint='/v1/completions', header=None, max_concurrency=None, model='Qwen/Qwen3.5-35B-A3B', input_len=None, output_len=None, tokenizer=None, tokenizer_mode='auto', use_beam_search=False, logprobs=None, request_rate=inf, burstiness=1.0, disable_tqdm=False, num_warmups=0, profile=False, save_result=True, save_detailed=False, append_result=False, metadata=None, result_dir='/home/igogo/.config/vllm-models/benchmarks', result_filename='bench_qwen35-coder-35b_20260417T174844Z.json', ignore_eos=False, percentile_metrics='ttft,tpot,itl,e2el', metric_percentiles='99', goodput=None, request_id_prefix='bench-2c09a502-', top_p=None, top_k=None, min_p=None, temperature=None, frequency_penalty=None, presence_penalty=None, repetition_penalty=None, served_model_name=None, lora_modules=None, lora_assignment='random', ramp_up_strategy=None, ramp_up_start_rps=None, ramp_up_end_rps=None, ready_check_timeout_sec=0, extra_body=None, skip_tokenizer_init=False, insecure=False, plot_timeline=False, timeline_itl_thresholds=[25.0, 50.0], plot_dataset_stats=False)
+INFO 04-17 19:51:56 [datasets.py:700] Sampling input_len from [512, 512] and output_len from [256, 256]
+WARNING: vllm bench serve no longer sets temperature==0 (greedy) in requests by default. The default will be determined on the server side and can be model/API specific. For the old behavior, include --temperature=0.
+Starting initial single prompt test run...
+Skipping endpoint ready check.
+Starting main benchmark run...
+Traffic request rate: inf
+Burstiness factor: 1.0 (Poisson process)
+Maximum request concurrency: None
+  0%|          | 0/100 [00:00<?, ?it/s]  1%|          | 1/100 [01:26<2:23:21, 86.88s/it]  2%|▏         | 2/100 [01:30<1:01:29, 37.65s/it]  5%|▌         | 5/100 [01:30<17:02, 10.76s/it]    9%|▉         | 9/100 [01:30<06:58,  4.60s/it] 13%|█▎        | 13/100 [01:30<03:42,  2.55s/it] 17%|█▋        | 17/100 [01:31<02:11,  1.58s/it] 21%|██        | 21/100 [01:31<01:21,  1.04s/it] 25%|██▌       | 25/100 [01:31<00:53,  1.41it/s] 29%|██▉       | 29/100 [01:32<00:35,  2.00it/s] 33%|███▎      | 33/100 [01:32<00:24,  2.75it/s] 37%|███▋      | 37/100 [01:32<00:16,  3.72it/s] 41%|████      | 41/100 [01:32<00:12,  4.87it/s] 45%|████▌     | 45/100 [01:33<00:08,  6.24it/s] 49%|████▉     | 49/100 [01:33<00:06,  7.71it/s] 53%|█████▎    | 53/100 [01:33<00:05,  9.37it/s] 57%|█████▋    | 57/100 [01:33<00:03, 10.94it/s] 61%|██████    | 61/100 [01:33<00:03, 12.65it/s] 65%|██████▌   | 65/100 [01:34<00:02, 14.20it/s] 68%|██████▊   | 68/100 [01:34<00:02, 14.38it/s] 72%|███████▏  | 72/100 [01:34<00:01, 16.21it/s] 76%|███████▌  | 76/100 [01:34<00:01, 17.69it/s] 80%|████████  | 80/100 [01:34<00:01, 19.54it/s] 84%|████████▍ | 84/100 [01:35<00:00, 21.41it/s] 88%|████████▊ | 88/100 [01:35<00:00, 24.13it/s] 92%|█████████▏| 92/100 [01:35<00:00, 26.69it/s] 99%|█████████▉| 99/100 [01:35<00:00, 34.99it/s]100%|██████████| 100/100 [01:35<00:00,  1.05it/s]
+tip: install termplotlib and gnuplot to plot the metrics
+============ Serving Benchmark Result ============
+Successful requests:                     100       
+Failed requests:                         0         
+Benchmark duration (s):                  95.38     
+Total input tokens:                      51200     
+Total generated tokens:                  25600     
+Request throughput (req/s):              1.05      
+Output token throughput (tok/s):         268.41    
+Peak output token throughput (tok/s):    400.00    
+Peak concurrent requests:                100.00    
+Total token throughput (tok/s):          805.22    
+---------------Time to First Token----------------
+Mean TTFT (ms):                          10424.18  
+Median TTFT (ms):                        9971.01   
+P99 TTFT (ms):                           19531.91  
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          324.15    
+Median TPOT (ms):                        326.85    
+P99 TPOT (ms):                           341.38    
+---------------Inter-token Latency----------------
+Mean ITL (ms):                           324.15    
+Median ITL (ms):                         308.11    
+P99 ITL (ms):                            795.27    
+----------------End-to-end Latency----------------
+Mean E2EL (ms):                          93081.58  
+Median E2EL (ms):                        93316.73  
+P99 E2EL (ms):                           95367.87  
+==================================================
+[qwen35-coder-35b] appended row to /home/igogo/.config/vllm-models/benchmarks/summary.csv
+[qwen35-coder-35b] stopping server
+
+== Summary ==
+timestamp           model               repo                     num_prompts  input_len  output_len  request_rate  request_throughput_rps  output_throughput_tps  total_token_throughput_tps  mean_ttft_ms          median_ttft_ms        p99_ttft_ms           mean_tpot_ms          median_tpot_ms       p99_tpot_ms          mean_itl_ms          result_file
+"20260417T172101Z"  "Qwen3.6-35B-A3B"   "Qwen/Qwen3.6-35B-A3B"   "100"        "512"      "256"       "inf"         "0.8597414520905952"    "220.09381173519236"   "660.281435205577"          "30830.892162589807"  "30386.43694250277"   "39963.09982879022"   "326.19611931407906"  "328.7108440803993"  "342.9158551147954"  "326.1961198003538"  "bench_Qwen3.6-35B-A3B_20260417T172101Z.json"
+"20260417T172910Z"  "gemma4-31b-it"     "google/gemma-4-31B-it"  "100"        "512"      "256"       "inf"         "0.3522445425080758"    "90.1746028820674"     "270.5238086462022"         "29714.027764420098"  "29054.667968499416"  "52640.29057491891"   "761.2169063819998"   "749.1272469372608"  "899.4582329640783"  "761.216906821216"   "bench_gemma4-31b-it_20260417T172910Z.json"
+"20260417T174247Z"  "glm47-flash"       "zai-org/GLM-4.7-Flash"  "100"        "512"      "256"       "inf"         "1.0510179190856714"    "269.0605872859319"    "807.1817618577957"         "16142.003325169426"  "16402.69893200093"   "23534.104957253076"  "300.29468925553203"  "299.9312513215723"  "347.4589718226885"  "300.2946898810978"  "bench_glm47-flash_20260417T174247Z.json"
+"20260417T174844Z"  "qwen35-coder-35b"  "Qwen/Qwen3.5-35B-A3B"   "100"        "512"      "256"       "inf"         "1.0484691082806807"    "268.40809171985427"   "805.2242751595628"         "10424.182973259522"  "9971.014730996103"   "19531.91070513909"   "324.1466447106285"   "326.8458469529458"  "341.3848388686718"  "324.1466450086665"  "bench_qwen35-coder-35b_20260417T174844Z.json"
+
+Raw JSONs: /home/igogo/.config/vllm-models/benchmarks
+CSV:       /home/igogo/.config/vllm-models/benchmarks/summary.csv
