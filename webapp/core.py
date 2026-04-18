@@ -318,15 +318,25 @@ def start_server(model_name: str, port: int,
     model = get_model(model_name)
     gpu_mem = gpu_memory_utilization or model["gpu_memory_utilization"]
 
-    # Check if any server is already running
+    # Block only if the same model is already running (multi-server is allowed).
     running = list_servers()
-    if running:
-        names = ", ".join(s.model_name for s in running)
-        raise RuntimeError(
-            f"Server already running: {names}. Stop it before starting a new one."
-        )
+    for s in running:
+        if s.model_name == model_name:
+            raise RuntimeError(
+                f"Model '{model_name}' is already running as {s.server_id} "
+                f"on port {s.port} (pid={s.pid})"
+            )
+        if s.port == port:
+            raise RuntimeError(
+                f"Port {port} already used by {s.server_id} ({s.model_name})"
+            )
 
-    # Check GPU memory — model needs at least size_gb * 1.1 free
+    # Port conflict (catches non-vLLM listeners too).
+    for conn in psutil.net_connections(kind="tcp"):
+        if conn.laddr.port == port and conn.status == "LISTEN":
+            raise RuntimeError(f"Port {port} is already in use")
+
+    # Check GPU memory — model needs at least size_gb * 1.1 free.
     model_size = get_model_size_gb(model["repo"])
     if model_size:
         free_gb = get_gpu_free_memory_gb()
@@ -335,11 +345,6 @@ def start_server(model_name: str, port: int,
                 f"Not enough GPU memory: model needs ~{model_size} GB "
                 f"but only {free_gb:.0f} GB free"
             )
-
-    # Check port conflict
-    for conn in psutil.net_connections(kind="tcp"):
-        if conn.laddr.port == port and conn.status == "LISTEN":
-            raise RuntimeError(f"Port {port} is already in use")
 
     sid = f"server-{int(time.time())}"
     log_path = CONFIG_DIR / f"{sid}.log"
