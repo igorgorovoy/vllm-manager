@@ -7,7 +7,6 @@
 ## Quick start
 
 ```bash
-cd /home/igogo/vllm-tools
 chmod +x vllm_models.py
 ./vllm_models.py list
 ```
